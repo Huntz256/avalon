@@ -69,7 +69,7 @@ public strictfp class RobotPlayer
                 Direction dir = randomDirection();
 
                 // Randomly attempt to build a gardener in this direction
-                if (rc.canHireGardener(dir) && Math.random() < .1)
+                if (rc.canHireGardener(dir) && Math.random() < .15)
                 {
                     rc.hireGardener(dir);
                 }
@@ -136,7 +136,7 @@ public strictfp class RobotPlayer
                 {
                     rc.buildRobot(RobotType.SOLDIER, dir);
                 }
-                else if (rc.canBuildRobot(RobotType.LUMBERJACK, dir) && Math.random() < .03 && rc.isBuildReady())
+                else if (rc.canBuildRobot(RobotType.LUMBERJACK, dir) && Math.random() < .04 && rc.isBuildReady())
                 {
                     rc.buildRobot(RobotType.LUMBERJACK, dir);
                 }
@@ -158,6 +158,7 @@ public strictfp class RobotPlayer
 
 
                 Direction toArchon = myLocation.directionTo(archonLoc);
+                Direction awayFromArchon = toArchon.rotateRightDegrees(180);
                 TreeInfo[] neutralTrees = rc.senseNearbyTrees(RobotType.GARDENER.bodyRadius + 1, Team.NEUTRAL);
 
                 // Water adjacent team trees
@@ -176,10 +177,10 @@ public strictfp class RobotPlayer
                     }
                 }
 
-                // Randomly move such that we are close to Arch
-                else if (Math.random() < 0.05)
+                // Randomly move such that they tend to move away from our Arch
+                else if (Math.random() < 0.1)
                 {
-                	tryMove(toArchon);
+                	tryMove(awayFromArchon);
                 }
                 else
                 {
@@ -397,16 +398,16 @@ public strictfp class RobotPlayer
                             }*/
 
                             // Move toward an enemy archon!
-                            if (Math.random() < 0.2)
-                            {
+                            //if (Math.random() < 0.4)
+                            //{
                                 // Move toward an enemy archon
                                 tryMove(myLocation.directionTo(initialEnemyArchonLocation[0]));
-                            }
-                            else
-                            {
+                            //}
+                            //else
+                            //{
                                 // Move randomly
-                                tryMove(randomDirection());
-                            }
+                            //    tryMove(randomDirection());
+                            //}
                         }
                     }
                 }
