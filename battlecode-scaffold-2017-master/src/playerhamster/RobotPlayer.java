@@ -38,10 +38,7 @@ public strictfp class RobotPlayer
                 runSoldier();
                 break;
             case LUMBERJACK:
-                if (Math.random() < 0.5)
-                    runDefenseLumberjack();
-                else
-                    runAttackLumberjack();
+                runAttackLumberjack();
                 break;
             case TANK:
                 runTank();
@@ -187,10 +184,8 @@ public strictfp class RobotPlayer
                 	tryMove(randomDirection());
                 }
 
-
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();
-
             }
             catch (Exception e)
             {
@@ -230,7 +225,7 @@ public strictfp class RobotPlayer
 
                 MapLocation myLocation = rc.getLocation();
 
-                if (Math.random() < 0.1)
+                if (Math.random() < 0.4)
                 {
                     // Move toward an enemy archon
                     tryMove(myLocation.directionTo(initialEnemyArchonLocation[0]));
@@ -270,7 +265,7 @@ public strictfp class RobotPlayer
                 // See if there are any enemy robots within striking range (distance 1 from lumberjack's radius)
                 RobotInfo[] robots = rc.senseNearbyRobots(RobotType.LUMBERJACK.bodyRadius+GameConstants.LUMBERJACK_STRIKE_RADIUS, enemy);
 
-                if(robots.length > 0 && !rc.hasAttacked()) 
+                if (robots.length > 0 && !rc.hasAttacked())
                 {
                     // Use strike() to hit all nearby robots!
                     rc.strike();
@@ -281,7 +276,7 @@ public strictfp class RobotPlayer
                     robots = rc.senseNearbyRobots(7, enemy);
 
                     // If there is a robot, move towards it
-                    if(robots.length > 0) 
+                    if (robots.length > 0)
                     {
                         MapLocation myLocation = rc.getLocation();
                         MapLocation enemyLocation = robots[0].getLocation();
@@ -293,6 +288,7 @@ public strictfp class RobotPlayer
                     {
                         TreeInfo[] neutralTrees = rc.senseNearbyTrees(RobotType.LUMBERJACK.bodyRadius+GameConstants.LUMBERJACK_STRIKE_RADIUS, Team.NEUTRAL);
 
+                        // If there are nearby neutral trees, then chop them down
                         if (neutralTrees.length > 0 && Math.random() < 0.99)
                         {
                             rc.chop(neutralTrees[0].getID());
@@ -347,7 +343,7 @@ public strictfp class RobotPlayer
                 // See if there are any enemy robots within striking range (distance 1 from lumberjack's radius)
                 RobotInfo[] robots = rc.senseNearbyRobots(RobotType.LUMBERJACK.bodyRadius+GameConstants.LUMBERJACK_STRIKE_RADIUS, enemy);
 
-                if(robots.length > 0 && !rc.hasAttacked())
+                if (robots.length > 0 && !rc.hasAttacked())
                 {
                     // Use strike() to hit all nearby robots!
                     rc.strike();
@@ -358,7 +354,7 @@ public strictfp class RobotPlayer
                     robots = rc.senseNearbyRobots(7, enemy);
 
                     // If there is a robot, move towards it
-                    if(robots.length > 0)
+                    if (robots.length > 0)
                     {
                         MapLocation myLocation = rc.getLocation();
                         MapLocation enemyLocation = robots[0].getLocation();
@@ -370,6 +366,7 @@ public strictfp class RobotPlayer
                     {
                         TreeInfo[] neutralTrees = rc.senseNearbyTrees(RobotType.LUMBERJACK.bodyRadius+GameConstants.LUMBERJACK_STRIKE_RADIUS, Team.NEUTRAL);
 
+                        // If there are nearby neutral trees, then chop them down
                         if (neutralTrees.length > 0 && Math.random() < 0.99)
                         {
                             rc.chop(neutralTrees[0].getID());
@@ -378,36 +375,17 @@ public strictfp class RobotPlayer
                         {
                             MapLocation myLocation = rc.getLocation();
 
-                            /*
-                            if (Math.random() < 0.5)
+                            // Move toward the direction where the enemy archon probably is
+                            if (Math.random() < 0.4)
                             {
-                                MapLocation[] broadcastingLocations = rc.senseBroadcastingRobotLocations();
-                                float distance;
-                                float maxDistance = 0;
-                                int maxIndex = 0;
-                                for (int i = 0; i < broadcastingLocations.length; i++) {
-                                    distance = myLocation.distanceTo(broadcastingLocations[i]);
-
-                                    if (distance > maxDistance) {
-                                        maxDistance = distance;
-                                        maxIndex = i;
-                                    }
-                                }
-
-                                tryMove(myLocation.directionTo(broadcastingLocations[maxIndex]));
-                            }*/
-
-                            // Move toward an enemy archon!
-                            //if (Math.random() < 0.4)
-                            //{
-                                // Move toward an enemy archon
+                                // Move toward the enemy archon's initial location
                                 tryMove(myLocation.directionTo(initialEnemyArchonLocation[0]));
-                            //}
-                            //else
-                            //{
+                            }
+                            else
+                            {
                                 // Move randomly
-                            //    tryMove(randomDirection());
-                            //}
+                                tryMove(randomDirection());
+                            }
                         }
                     }
                 }
