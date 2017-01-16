@@ -9,6 +9,7 @@ public strictfp class RobotPlayer
     private static RobotController rc;
     private static final Direction[] dirList = new Direction[4];
     private static MapLocation[] initialEnemyArchonLocation;
+    private static boolean sentGoingToDieSignal = false;
 
     // These channels keep track of our archon's location
     private static final int ARCHON_CHANNEL_ONE = 0;
@@ -218,11 +219,11 @@ public strictfp class RobotPlayer
                 }
 
                 // Randomly attempt to build a soldier or lumberjack in this direction
-                else if (rc.canBuildRobot(RobotType.SOLDIER, dir) && Math.random() < .02)
+                else if (rc.canBuildRobot(RobotType.SOLDIER, dir) && Math.random() < .04 && rc.isBuildReady())
                 {
                     rc.buildRobot(RobotType.SOLDIER, dir);
                 }
-                else if (rc.canBuildRobot(RobotType.LUMBERJACK, dir) && Math.random() < .04 && rc.isBuildReady())
+                else if (rc.canBuildRobot(RobotType.LUMBERJACK, dir) && Math.random() < .14 && rc.isBuildReady())
                 {
                     rc.buildRobot(RobotType.LUMBERJACK, dir);
                 }
@@ -642,8 +643,10 @@ public strictfp class RobotPlayer
                     tryMove(randomDirection());
                 }
 
-                if (rc.getHealth() < 3)
+                // Signal for another scout to be created if this one is going to die
+                if (rc.getHealth() < 3 && !sentGoingToDieSignal)
                 {
+                    sentGoingToDieSignal = true;
                     rc.broadcast(SCOUT_NUM_CHANNEL, rc.readBroadcast(SCOUT_NUM_CHANNEL) - 1);
                 }
 
