@@ -26,3 +26,4 @@ battlecode-scaffold.iws
 .classpath
 .project
 .settings/
+gradle/wrapper/gradle-wrapper.properties
