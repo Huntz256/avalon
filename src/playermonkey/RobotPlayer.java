@@ -142,6 +142,7 @@ public strictfp class RobotPlayer {
 //					}
 //				}
 				
+				// Take all objects nearby and put them in an array, dirNearbyObjects
 				TreeInfo[] treesRadius3 = rc.senseNearbyTrees(3);
 				RobotInfo[] robotRadius3 = rc.senseNearbyRobots(3);
 				Direction[] dirNearbyObjects = new Direction[treesRadius3.length + robotRadius3.length];
@@ -154,7 +155,7 @@ public strictfp class RobotPlayer {
 					dirNearbyObjects[dirLength] = rc.getLocation().directionTo(robotRadius3[i].getLocation());
 					dirLength++;
 				}
-				// sort directionNearbyObjects
+				// Sort directionNearbyObjects
 				Direction temp;
 				for(int i = 0; i < dirNearbyObjects.length; i++) {
 					int minAngleIndex = i;
@@ -171,30 +172,40 @@ public strictfp class RobotPlayer {
 					dirNearbyObjects[i] = dirNearbyObjects[minAngleIndex];
 					dirNearbyObjects[minAngleIndex] = temp;
 				}
-				float[] angles = new float[dirNearbyObjects.length];
-				for(int i = 0; i < angles.length; i++) {
-					if(i < angles.length - 1)
-						angles[i] = dirNearbyObjects[i].degreesBetween(dirNearbyObjects[i + 1]);
-					else
-						angles[i] = dirNearbyObjects[i].degreesBetween(dirNearbyObjects[0]);
-					System.out.println(angles[i]);
-				}
 				
+				// Get an array of angles between each nearby object
 				int remainingSpace = 0;
-				for(int i = 0; i < angles.length; i++) {
-					int spaces = (int)angles[i]/120;
-					remainingSpace += spaces;
-				}
-				System.out.println(remainingSpace);
 				Direction dirBuild = null;
-				for(int i = 0; i < angles.length; i++) {
-					if(angles[i] >= 120) {
-						dirBuild = dirNearbyObjects[i].rotateLeftDegrees(60);
-						break;
+				if(dirNearbyObjects.length == 0) {
+					remainingSpace = 6;
+					dirBuild = Direction.EAST;
+				}
+				else if(dirNearbyObjects.length == 1) {
+					remainingSpace = 5;
+					dirBuild = dirNearbyObjects[0].rotateLeftDegrees(60);
+				}
+					
+				else {
+					float[] angles = new float[dirNearbyObjects.length];
+					for(int i = 0; i < angles.length; i++) {
+						if(i < angles.length - 1)
+							angles[i] = dirNearbyObjects[i].degreesBetween(dirNearbyObjects[i + 1]);
+						else
+							angles[i] = dirNearbyObjects[i].degreesBetween(dirNearbyObjects[0]);
+					}
+					for(int i = 0; i < angles.length; i++) {
+						int spaces = (int)((angles[i] - 60)/60);
+						remainingSpace += spaces;
+					}
+					for(int i = 0; i < angles.length; i++) {
+						if(angles[i] >= 120) {
+							dirBuild = dirNearbyObjects[i].rotateLeftDegrees(60);
+							break;
+						}
 					}
 				}
-				System.out.println(dirBuild.getAngleDegrees());
 				
+				// Build trees around Gardener leaving one space open
 				if(rc.isBuildReady() && /*rc.readBroadcast(SCOUT_NUM_CHANNEL) >= 2 &&*/ remainingSpace >= 1) {
 					System.out.println("hi");
 					if(rc.canPlantTree(dirBuild))
@@ -280,7 +291,7 @@ public strictfp class RobotPlayer {
 					}
 					if(treesNeutral.length == i + 1)
 						nearestTree = null;
-					}
+				}
 				
 				if(nearestTree != null) {
 					MapLocation nearestTreeLoc = nearestTree.getLocation();
@@ -319,7 +330,8 @@ public strictfp class RobotPlayer {
 				if(robots.length > 0 && !rc.hasAttacked()) {
 					// Use strike() to hit all nearby robots!
 					rc.strike();
-				} else {
+				}
+				else {
 					// No close robots, so search for robots within sight radius
 					robots = rc.senseNearbyRobots(-1,enemy);
 					
